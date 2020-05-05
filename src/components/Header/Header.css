@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.nav-bar {
+  font-size: 12px;
+  border-bottom: 1px solid gray;
+  height: 100px;
+  display: flex;
+}
+
+.nav-bar__title {
+  font-size: 4em;
+  font-family: 'Pacifico', cursive;
+}
+
+.nav-bar__right {
+  margin: auto 20px auto  auto;
+}
+
+.nav_bar__links {
+  margin-right: 40px;
+  text-decoration: none;
+  font-size: 2em;
+}
+
+@media (max-width: 768px) {
+  .nav-bar {
+    text-align: center;
+  }
+}

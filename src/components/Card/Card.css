@@ -1,0 +1,44 @@
+.card {
+  width: 500px;
+  margin: 50px;
+  border-radius: 11px;
+  -webkit-box-shadow: -9px 8px 26px -1px rgba(0,0,0,0.75);
+  -moz-box-shadow: -9px 8px 26px -1px rgba(0,0,0,0.75);
+  box-shadow: -9px 8px 26px -1px rgba(0,0,0,0.75);
+  font-size: 16px;
+}
+
+.card__img-container {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  cursor: pointer;
+}
+
+.card__img   {
+  width: 100%;
+  height: 100%;
+
+  transition: 0.5s;
+}
+
+.card__img:hover {
+  transform: scale(1.2);
+  overflow: hidden;
+}
+
+.card-text {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+.card__area {
+  font-size: 2em;
+}
+
+.card__listings {
+  text-decoration: none !important;
+}
