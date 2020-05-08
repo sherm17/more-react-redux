@@ -24,7 +24,6 @@ class App extends Component {
       loggedIn: false,
       areas: null,
       favorites: [],
-      listings: []
     }
   }
 
@@ -35,6 +34,35 @@ class App extends Component {
     this.setState({
       [type]: value
     });
+  }
+
+  removeFavorites = (listItem) => {
+    const {listing_id} = listItem;
+    let {favorites} = this.state;
+    favorites = favorites.filter(fav => fav.listing_id !== listing_id);
+    this.setState({
+      favorites
+    });
+  }
+
+  updateFavorites = (listItem) => {
+    const { listing_id } = listItem;
+    const {favorites} = this.state;
+    let foundIndex = null;
+    for (var i = 0; i < favorites.length; i++) {
+      if (favorites[i].listing_id === listing_id) {
+        foundIndex = i;
+        break;
+      }
+    }
+    if (foundIndex !== null) {
+      favorites.splice(foundIndex, 1);
+    } else {
+      favorites.push(listItem)
+    }
+    this.setState({
+      favorites,
+    }, () => console.log(this.state));
   }
 
   handleSubmit = (e) => {
@@ -50,7 +78,7 @@ class App extends Component {
   }
 
   render() {
-    const { loggedIn } = this.state;
+    const { loggedIn, favorites } = this.state;
     return (
       <Router>
         <Header />
@@ -66,12 +94,23 @@ class App extends Component {
             <Areas />
           </Route>
           <Route path="/favorites">
-            <Favorites />
+            <Favorites 
+              favorites = {favorites}
+              removeFavorites = {this.removeFavorites}
+            />      
           </Route>
           <Route exact={true} path="/areas/:areaId/listings">
-            <ListingsContainer />
+            <ListingsContainer 
+              showFav = {false}
+              updateFavorites = {this.updateFavorites}
+              favorites = {favorites}
+              removeFavorites = {this.removeFavorites}
+            />
           </Route>
-          <Route path="/areas/:areaId/listings/:listingId">
+          <Route 
+            path="/areas/:areaId/listings/:listingId"
+            render = {(props) => <DetailedListing {...props} />}
+          >
             <DetailedListing />
           </Route>
         </Switch>

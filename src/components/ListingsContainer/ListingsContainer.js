@@ -5,18 +5,34 @@ import { withRouter } from "react-router-dom";
 import Listing from "../Listing/Listing";
 import uuid from "react-uuid";
 
+
 class ListingsContainer extends Component {
   constructor(props) {
     super(props);
+    const {showFav, updateFavorites} = this.props;
     this.state = {
       listings: null,
-      favorites: [],
-      reRenderList: true
+      reRenderList: true,
+      showFav
     }
   }
 
+  checkIfAlreadyFavorite = (listings) => {
+    const {favorites} = this.props;
+    listings.forEach(item => {
+      for (var i = 0; i < favorites.length; i++) {
+        const {listing_id} = item;
+        if (favorites[i].listing_id === listing_id) {
+          console.log("found a fav")
+          item.isFavorite = true;
+          break;
+        }
+      }
+    });
+    return listings;
+  }
+
   componentDidMount() {
-    console.log("did mount");
     const areaId = Number.parseInt(this.props.match.params.areaId);
     const listingAPIurl = "http://localhost:3001/api/v1/listings";
     fetch(listingAPIurl)
@@ -27,16 +43,16 @@ class ListingsContainer extends Component {
           .filter(listing => listing.area_id === areaId)
           .map(listing => {
             return { ...listing, isFavorite: false }
-          })
+          });
+        let updatedAreaListings = this.checkIfAlreadyFavorite(areaListings);
         this.setState({
-          listings: areaListings,
+          listings: updatedAreaListings,
         });
       })
-      .catch(err => alert("There has been an error"));
+      .catch(err => console.log(err));
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log(nextState);
     if (nextState.reRenderList == false) {
       return false
     }
@@ -44,49 +60,29 @@ class ListingsContainer extends Component {
   }
 
   toggleFavorites = (listingItem) => {
-    let { favorites, listings } = this.state;
-    let updatedListing;
-    const { listing_id } = listingItem;
-    const foundFav = favorites.find(fav => fav.listing_id === listing_id);
-    if (foundFav) {
-      // item already favorited so unfavorite
-      updatedListing = listings.map(listing => {
-        if (listing.listing_id === listing_id) {
-          return { ...listing, isFavorite: false };
-        }
-        return listing
-      });
-      favorites = favorites.filter(fav => fav.listing_id != listing_id);
-    } else {
-      // make item favorite
-      updatedListing = listings.map(listing => {
-        if (listing.listing_id === listing_id) {
-          return { ...listing, isFavorite: true };
-        }
-        return listing;
-      });
-      favorites.push(listingItem);
-    }
+    const {updateFavorites} = this.props;
+    updateFavorites(listingItem);
+
     this.setState({
-      favorites,
-      listings: [...updatedListing],
       reRenderList: false
-    }, () => {
-      console.log(this.state);
     });
   }
 
   render() {
-    const { listings } = this.state;
-    const { toggleFavorites } = this.props;
+    const { listings, showFav } = this.state;
+    const { toggleFavorites, updateFavorites, favorites, removeFavorites } = this.props;
     let listingDisplay;
-    if (listings) {
-      listingDisplay = listings.map(eachListing => {
+    let listsToShow = listings;
+
+    if (listsToShow) {
+      listingDisplay = listsToShow.map(eachListing => {
         const { details, area, superhost, cost_per_night } = eachListing;
         return <Listing
           {...eachListing}
           key={uuid()}
-          toggleFavorites={this.toggleFavorites}
+          toggleFavorites = {this.toggleFavorites}
+          showFavButton = {true}
+          removeFavorites = {removeFavorites}
         />
       });
     }

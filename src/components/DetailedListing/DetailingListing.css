@@ -1,0 +1,110 @@
+* {
+  box-sizing: border-box;
+}
+.content {
+  margin-top: 80px; 
+  padding: 0 120px;
+  font-size: 16px;
+}
+
+.image-container {
+  display: flex;
+  height: 600px;
+}
+
+.listing-detail__row {
+  padding-top: 30px;
+  border-bottom: .5px solid gray;
+  padding-bottom: 30px;
+}
+
+.img-container {
+  position: relative;
+}
+
+.sub-info {
+  line-height: 25px;
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: black;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.overlay:hover {
+  opacity: 0.3;
+}
+
+/* .img-container:hover {
+  z-index: 100;
+  background: black;
+  opacity: 0.5;
+} */
+
+.row-title {
+  font-size: 2em;
+  padding-bottom: 15px;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  padding-left: 10px;
+}
+
+.feature {
+  font-size: 1.3em;
+}
+
+.feature:not(:last-child) {
+  padding-bottom: 15px;
+}
+
+
+
+/* .feature-listing:last-child {
+  padding-bottom: 0px;
+} */
+
+.col {
+  height: 100%;
+}
+
+.big-col {
+  width: 70%;
+}
+
+.big-img-container{
+  height: 100%;
+}
+
+.big-img-container{
+  overflow: hidden;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.top-img {
+  border-top-right-radius: 8px;
+  overflow: hidden;
+}
+
+.bottom-img {
+  border-bottom-right-radius: 10px;
+  padding-top: 8px;
+  overflow: hidden;
+}
+
+.small-img-container {
+  height: 50%;
+}
+
+img {
+  height: 100%;
+  width: 100%;
+}
