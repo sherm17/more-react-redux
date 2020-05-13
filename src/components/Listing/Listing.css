@@ -134,32 +134,11 @@
   position:relative;
 }
 
-a:hover {
-  color: green;
+.info-side a {
+  text-decoration: none;
+  color: black;
 }
-
 .listing-container {
   position: relative;
   height: 300px;
-}
-
-.listing-container .detail-listing-link {
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  right:0;
-}
-
-
-
-.listing-container .listing {
-  position:relative;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.listing-container .listing a{
-  pointer-events: auto;
-  position:relative;
 }

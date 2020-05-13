@@ -1,15 +1,19 @@
-import React, { Component } from "react";
-import "./ListingsContainer.css";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-import { withRouter } from "react-router-dom";
-import Listing from "../Listing/Listing";
-import uuid from "react-uuid";
+import Listing from '../Listing/Listing';
 
+import { addFav, removeFav } from '../../actions/favorites';
+import { fetchListings } from '../../actions/listings';
+import { withRouter } from 'react-router-dom';
+
+import uuid from 'react-uuid';
+import './ListingsContainer.css';
 
 class ListingsContainer extends Component {
   constructor(props) {
     super(props);
-    const {showFav, updateFavorites} = this.props;
+    const { showFav } = this.props;
     this.state = {
       listings: null,
       reRenderList: true,
@@ -17,13 +21,20 @@ class ListingsContainer extends Component {
     }
   }
 
+  getListingInArea = (listings) => {
+    const areaId = Number.parseInt(this.props.match.params.areaId);
+    return listings.filter(l => l.area_id === areaId);
+  }
+
   checkIfAlreadyFavorite = (listings) => {
-    const {favorites} = this.props;
+    const { favoritesList } = this.props;
+    listings = listings.map(eachListing => {
+      return { ...eachListing, isFavorite: false }
+    });
     listings.forEach(item => {
-      for (var i = 0; i < favorites.length; i++) {
-        const {listing_id} = item;
-        if (favorites[i].listing_id === listing_id) {
-          console.log("found a fav")
+      for (var i = 0; i < favoritesList.length; i++) {
+        const { listing_id } = item;
+        if (favoritesList[i].listing_id === listing_id) {
           item.isFavorite = true;
           break;
         }
@@ -33,56 +44,38 @@ class ListingsContainer extends Component {
   }
 
   componentDidMount() {
-    const areaId = Number.parseInt(this.props.match.params.areaId);
     const listingAPIurl = "http://localhost:3001/api/v1/listings";
-    fetch(listingAPIurl)
-      .then(response => response.json())
-      .then(jsonData => {
-        const { listings } = jsonData;
-        let areaListings = listings
-          .filter(listing => listing.area_id === areaId)
-          .map(listing => {
-            return { ...listing, isFavorite: false }
-          });
-        let updatedAreaListings = this.checkIfAlreadyFavorite(areaListings);
-        this.setState({
-          listings: updatedAreaListings,
-        });
-      })
-      .catch(err => console.log(err));
+    this.props.fetchListings(listingAPIurl);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextState.reRenderList == false) {
+    // stop rerender of area after favoriting a listing
+    if (nextState.reRenderList === false) {
       return false
     }
     return true;
   }
 
-  toggleFavorites = (listingItem) => {
-    const {updateFavorites} = this.props;
-    updateFavorites(listingItem);
-
+  stopRerender = () => {
     this.setState({
       reRenderList: false
     });
   }
 
   render() {
-    const { listings, showFav } = this.state;
-    const { toggleFavorites, updateFavorites, favorites, removeFavorites } = this.props;
+    const { areaListings, loading, fetchSuccess } = this.props;
+    const { toggleFavorites } = this.props;
     let listingDisplay;
-    let listsToShow = listings;
-
-    if (listsToShow) {
-      listingDisplay = listsToShow.map(eachListing => {
-        const { details, area, superhost, cost_per_night } = eachListing;
+    let updatedAreaListings = this.getListingInArea(areaListings);
+    updatedAreaListings = this.checkIfAlreadyFavorite(updatedAreaListings);
+    if (areaListings) {
+      listingDisplay = updatedAreaListings.map(eachListing => {
         return <Listing
           {...eachListing}
           key={uuid()}
-          toggleFavorites = {this.toggleFavorites}
-          showFavButton = {true}
-          removeFavorites = {removeFavorites}
+          showFavButton={true}
+          stopRerender={this.stopRerender}
+          toggleFavorites={toggleFavorites}
         />
       });
     }
@@ -90,16 +83,34 @@ class ListingsContainer extends Component {
     return (
       <div className="listings-container">
         {
-          listings ?
-            listingDisplay
-            :
+          loading ?
             "Loading...."
+            :
+            fetchSuccess ?
+              listingDisplay
+              :
+              "Error"
         }
       </div>
     )
   }
 }
 
-export default withRouter(ListingsContainer);
+const mapDispatchToProps = (dispatch) => ({
+  toggleFavorites: listItem => dispatch(addFav(listItem)),
+  removeFavorites: listItem => dispatch(removeFav(listItem)),
+  fetchListings: url => dispatch(fetchListings(url))
+});
+
+const mapStateToProps = (state) => {
+  return {
+    favoritesList: state.favorites.favoritesList,
+    areaListings: state.listings.listings,
+    loading: state.listings.loading,
+    fetchSuccess: state.listings.fetchSuccess
+  }
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ListingsContainer));
 
 

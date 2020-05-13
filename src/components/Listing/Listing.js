@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import "./Listing.css";
+import './Listing.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 class Listing extends Component {
@@ -11,8 +11,7 @@ class Listing extends Component {
     super(props);
     const {
       details, area, name,
-      listing_id, toggleFavorites,
-      area_id, isFavorite
+      listing_id, isFavorite,
     } = props;
     const { superhost, beds, baths, cost_per_night } = details;
     const listingImg = process.env.PUBLIC_URL + `/images/${listing_id}_a.jpg`;
@@ -27,27 +26,42 @@ class Listing extends Component {
   }
 
   handleFavClick = (e) => {
+    const { stopRerender, showFavButton } = this.props;
+    if (stopRerender) stopRerender()
     e.preventDefault();
-    let {toggleFavorites, showFavButton, removeFavorites} = this.props;
-    if (showFavButton) {
-      toggleFavorites(this.props);
-      this.setState({
-        isFavorite: !this.state.isFavorite
-      })
-    } else {
-      removeFavorites(this.props);
-      console.log("delete from favorite");
+    const {
+      listing_id, area_id, name, address,
+      details, area
+    } = this.props;
+    const listDetails = {
+      listing_id, area_id, name, address,
+      details, area
     }
+
+    if (showFavButton) {
+      // toggle favorites
+      const { toggleFavorites } = this.props;
+      toggleFavorites(listDetails);
+    } else {
+      // remove favorites
+      const { removeFavorites } = this.props;
+      removeFavorites(listDetails);
+    }
+    this.setState({
+      isFavorite: !this.state.isFavorite
+    });
   }
+
+  componentDidUpdate
 
   render() {
     const {
-      details, listingImg,
-      area, name,
+      listingImg,
+      name,
       listing_id,
       superhost, beds, baths, cost_per_night,
     } = this.state;
-    const { toggleFavorites, area_id, showFavButton } = this.props;
+    const { area_id, showFavButton } = this.props;
     const { isFavorite } = this.state;
     const buttonIcon = showFavButton ? faHeart : faTimes;
     return (
@@ -72,7 +86,6 @@ class Listing extends Component {
                     {name}
                   </div>
                 </div>
-
                 <div className="listing__info__item">
                   {beds} bedroom {baths} bath
                 </div>
@@ -80,11 +93,9 @@ class Listing extends Component {
                   <span className="bold">${cost_per_night} </span>/ night
                 </div>
               </div>
-
             </div>
           </Link>
         </div>
-
         <div className="listing__favorite">
           <button
             className="favorite"

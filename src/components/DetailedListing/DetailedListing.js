@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import "./DetailingListing.css";
-
-import { withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import './DetailingListing.css';
+import { withRouter } from 'react-router-dom';
+import uuid from 'react-uuid';
 
 class DetailedListing extends Component {
   constructor(props) {
@@ -15,8 +15,7 @@ class DetailedListing extends Component {
     let { areaId, listingId } = this.props.match.params;
     areaId = Number.parseInt(areaId);
     listingId = Number.parseInt(listingId);
-    console.log(areaId, listingId);
-    fetch("http://localhost:3001/api/v1/listings")
+    fetch('http://localhost:3001/api/v1/listings')
       .then(response => response.json())
       .then(jsondata => {
         const { listings } = jsondata;
@@ -39,8 +38,8 @@ class DetailedListing extends Component {
   }
   render() {
     const {
-      listingInfo, listingId, area, addressStr, name,
-      baths, beds, cost_per_night, features, superhost
+      listingInfo, listingId, addressStr, name,
+      baths, beds, features
     } = this.state;
 
     const imageOne = process.env.PUBLIC_URL + `/images/${listingId}_a.jpg`;
@@ -49,10 +48,9 @@ class DetailedListing extends Component {
     let featureList;
     if (features) {
       featureList = features.map(eachFeature => {
-        return <div className="feature">{eachFeature}</div>
+        return <div key={uuid()}  className="feature">{eachFeature}</div>
       });
     }
-
 
     return (
       <div className="content">
@@ -60,7 +58,6 @@ class DetailedListing extends Component {
           listingInfo
             ?
             <>
-
               <div className="image-container">
                 <div className="col big-col">
                   <div className="img-container big-img-container">
